@@ -1,4 +1,5 @@
 var turf = require('@turf/helpers');
+const md5 = require('md5');
 
 const cosines = [];
 const sines = [];
@@ -7,9 +8,9 @@ for (let i = 0; i < 6; i++) {
     cosines.push(Math.cos(angle));
     sines.push(Math.sin(angle));
 }
-var hexagonAngle = 0.523598776; //30 degrees in radians
+const hexagonAngle = 0.523598776; //30 degrees in radians
 
-function getHexGrid(feature, cellSize){
+function getHexBin(feature, cellSize){
     var point = feature.geometry.coordinates;
     var degreesCellSize = (cellSize/1000)/111;
     finalHexRootPoint = getSelectedHexagon(point[1],point[0],degreesCellSize);
@@ -123,4 +124,45 @@ function hexagon(center, rx, ry, properties, cosines, sines) {
     return turf.polygon([vertices], properties);
 }
 
-module.exports.getHexGrid = getHexGrid;
+function calculateHexGrids(features, cellsize, isAddIds){
+    var gridMap=[];
+    features.forEach(function (feature, i){
+      if (feature.geometry.type.toLowerCase() === 'point') {
+        var x = getHexBin(feature, cellsize);
+        if (x) {
+          var gridId = md5(JSON.stringify(x.geometry));
+          x.id = gridId;
+          if (!x.properties) {
+            x.properties = {};
+            x.properties['count'] = 0;
+          }
+          var outGrid = x;
+          if (gridMap[gridId]) {
+            outGrid = gridMap[gridId];
+          } else {
+            if (isAddIds) {
+              outGrid.properties.ids = new Array();
+            }
+            gridMap[gridId] = outGrid;
+            outGrid.properties.count = 0;
+          }
+          outGrid.properties.count = outGrid.properties.count + 1;
+          if (isAddIds) {
+            outGrid.properties.ids.push(feature.id);
+          }
+          gridMap[gridId] = outGrid;
+        } else {
+          console.error("something went wrong and hexgrid is not available for feature - " + feature);
+          throw new Error("something went wrong and hexgrid is not available for feature - " + feature);
+        }
+      }
+  });
+    var hexFeatures=new Array();
+    for(var k in gridMap){
+        hexFeatures.push(gridMap[k]);
+    }
+    return hexFeatures;
+}
+
+module.exports.getHexBin = getHexBin;
+module.exports.calculateHexGrids = calculateHexGrids;

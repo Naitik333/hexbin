@@ -1,6 +1,6 @@
 {
   "name": "hexbin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Helper library to find hexagon grid in which particular point lies",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,8 @@
     "hexgrid"
   ],
   "dependencies": {
-    "@turf/helpers": "6.1.4"
+    "@turf/helpers": "6.1.4",
+    "md5": "2.2.1"
   },
   "author": "Naitik",
   "license": "MIT",
