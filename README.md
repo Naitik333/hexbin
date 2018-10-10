@@ -1,2 +1,3 @@
 # hexbin
-Helper library to find point lies in which hexagon of hexagonal grid
+Helper library to find hexagon grid in which particular point lies.
+This helps in creating hexagonal grids of different points.
