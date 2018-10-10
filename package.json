@@ -1,0 +1,26 @@
+{
+  "name": "hexbin",
+  "version": "1.0.0",
+  "description": "Helper library to find hexagon grid in which particular point lies",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Naitik333/hexbin.git"
+  },
+  "keywords": [
+    "hexbin",
+    "hexgrid"
+  ],
+  "dependencies": {
+    "@turf/helpers": "6.1.4"
+  },
+  "author": "Naitik",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Naitik333/hexbin/issues"
+  },
+  "homepage": "https://github.com/Naitik333/hexbin#readme"
+}
