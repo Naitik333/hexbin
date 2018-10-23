@@ -121,11 +121,15 @@ function hexagon(center, rx, ry, properties, cosines, sines) {
     }
     //first and last vertex must be the same
     vertices.push(vertices[0].slice());
-    return turf.polygon([vertices], properties);
+    var feature = turf.polygon([vertices], properties);
+    feature.properties.centroid = center;
+    return feature;
 }
 
 function calculateHexGrids(features, cellsize, isAddIds){
     var gridMap=[];
+    let maxCount = 0;
+    let minCount = Number.MAX_SAFE_INTEGER;
     features.forEach(function (feature, i){
       if (feature.geometry.type.toLowerCase() === 'point') {
         var x = getHexBin(feature, cellsize);
@@ -147,6 +151,12 @@ function calculateHexGrids(features, cellsize, isAddIds){
             outGrid.properties.count = 0;
           }
           outGrid.properties.count = outGrid.properties.count + 1;
+          if(outGrid.properties.count > maxCount){
+            maxCount = outGrid.properties.count;
+          }
+          if(outGrid.properties.count < minCount){
+            minCount = outGrid.properties.count;
+          }
           if (isAddIds) {
             outGrid.properties.ids.push(feature.id);
           }
@@ -159,7 +169,12 @@ function calculateHexGrids(features, cellsize, isAddIds){
   });
     var hexFeatures=new Array();
     for(var k in gridMap){
-        hexFeatures.push(gridMap[k]);
+        var feature = gridMap[k];
+        feature.properties.minCount = minCount;
+        feature.properties.maxCount = maxCount;
+        feature.properties.occupancy = feature.properties.count/maxCount;
+        feature.properties.color = "hsla(" + (200 - (feature.properties.occupancy*100*2))  + ", 100%, 50%,50%)";
+        hexFeatures.push(feature);
     }
     return hexFeatures;
 }
