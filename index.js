@@ -173,7 +173,7 @@ function calculateHexGrids(features, cellsize, isAddIds){
         feature.properties.minCount = minCount;
         feature.properties.maxCount = maxCount;
         feature.properties.occupancy = feature.properties.count/maxCount;
-        feature.properties.color = "hsla(" + (200 - (feature.properties.occupancy*100*2))  + ", 100%, 50%,50%)";
+        feature.properties.color = "hsla(" + (200 - (feature.properties.occupancy*100*2))  + ", 100%, 50%,0.51)";
         hexFeatures.push(feature);
     }
     return hexFeatures;
