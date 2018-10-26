@@ -128,10 +128,11 @@ function hexagon(center, rx, ry, properties, cosines, sines) {
     return feature;
 }
 
-function calculateHexGrids(features, cellsize, isAddIds){
+function calculateHexGrids(features, cellsize, isAddIds, groupByProperty){
     var gridMap=[];
     let maxCount = 0;
-    let minCount = Number.MAX_SAFE_INTEGER;
+    //let minCount = Number.MAX_SAFE_INTEGER;
+    let groupPropertyCount = {};
     features.forEach(function (feature, i){
       if (feature.geometry.type.toLowerCase() === 'point') {
         var x = getHexBin(feature, cellsize);
@@ -156,11 +157,34 @@ function calculateHexGrids(features, cellsize, isAddIds){
           if(outGrid.properties.count > maxCount){
             maxCount = outGrid.properties.count;
           }
+          /* 
           if(outGrid.properties.count < minCount){
             minCount = outGrid.properties.count;
-          }
+          }*/
           if (isAddIds) {
             outGrid.properties.ids.push(feature.id);
+          }
+
+          //GroupBy property logic
+          //console.log(groupByProperty);
+          if(groupByProperty){
+            let propertyValue = feature.properties[groupByProperty];
+            console.log(propertyValue);
+            if (groupPropertyCount[propertyValue] == null || groupPropertyCount[propertyValue].maxCount == null) {
+                groupPropertyCount[propertyValue] = {};
+                groupPropertyCount[propertyValue].maxCount = 0;
+            }
+            if(outGrid.properties.subcount == null) {
+                outGrid.properties.subcount = {};
+            }
+            if(outGrid.properties.subcount[propertyValue] == null){
+                outGrid.properties.subcount[propertyValue] = {};
+                outGrid.properties.subcount[propertyValue].count = 0;
+            }
+            outGrid.properties.subcount[propertyValue].count++;
+            if(outGrid.properties.subcount[propertyValue].count > groupPropertyCount[propertyValue].maxCount){
+                groupPropertyCount[propertyValue].maxCount = outGrid.properties.subcount[propertyValue].count;
+            }
           }
           gridMap[gridId] = outGrid;
         } else {
@@ -172,11 +196,19 @@ function calculateHexGrids(features, cellsize, isAddIds){
     var hexFeatures=new Array();
     for(var k in gridMap){
         var feature = gridMap[k];
-        feature.properties.minCount = minCount;
+        //feature.properties.minCount = minCount;
         feature.properties.maxCount = maxCount;
         feature.properties.occupancy = feature.properties.count/maxCount;
         feature.properties.color = "hsla(" + (200 - (feature.properties.occupancy*100*2))  + ", 100%, 50%,0.51)";
         hexFeatures.push(feature);
+        if(groupByProperty){
+            for (const key of Object.keys(feature.properties.subcount)) {
+                feature.properties.subcount[key].maxCount = groupPropertyCount[key].maxCount;
+                feature.properties.subcount[key].occupancy = feature.properties.subcount[key].count/groupPropertyCount[key].maxCount;
+                feature.properties.subcount[key].color = "hsla(" + (200 - (feature.properties.subcount[key].occupancy*100*2))  + ", 100%, 50%,0.51)";
+                console.log(key, JSON.stringify(feature.properties.subcount[key]));
+            }
+        }
     }
     return hexFeatures;
 }
