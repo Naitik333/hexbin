@@ -169,7 +169,7 @@ function calculateHexGrids(features, cellsize, isAddIds, groupByProperty){
           //console.log(groupByProperty);
           if(groupByProperty){
             let propertyValue = feature.properties[groupByProperty];
-            console.log(propertyValue);
+            //console.log(propertyValue);
             if (groupPropertyCount[propertyValue] == null || groupPropertyCount[propertyValue].maxCount == null) {
                 groupPropertyCount[propertyValue] = {};
                 groupPropertyCount[propertyValue].maxCount = 0;
@@ -206,7 +206,7 @@ function calculateHexGrids(features, cellsize, isAddIds, groupByProperty){
                 feature.properties.subcount[key].maxCount = groupPropertyCount[key].maxCount;
                 feature.properties.subcount[key].occupancy = feature.properties.subcount[key].count/groupPropertyCount[key].maxCount;
                 feature.properties.subcount[key].color = "hsla(" + (200 - (feature.properties.subcount[key].occupancy*100*2))  + ", 100%, 50%,0.51)";
-                console.log(key, JSON.stringify(feature.properties.subcount[key]));
+                //console.log(key, JSON.stringify(feature.properties.subcount[key]));
             }
         }
     }
