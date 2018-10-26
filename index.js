@@ -49,7 +49,7 @@ function getMoldulusHexagon(x, y, degreesCellSize)
     var gridWidth = halfWidth * 2;
 
     // Find the row and column of the box that the point falls in.
-    var row = Math.floor(y / gridHeight);
+    var row;
     var column;
 
     if (y < (degreesCellSize / 2)){
@@ -60,6 +60,8 @@ function getMoldulusHexagon(x, y, degreesCellSize)
             column = Math.ceil( (x - halfWidth) / gridWidth);
         }
     } else {
+        y = y - (degreesCellSize / 2);
+        row = Math.floor(y / gridHeight);
         var rowIsOdd = row % 2 == 1;
 
         // Is the row an odd number?
@@ -69,7 +71,7 @@ function getMoldulusHexagon(x, y, degreesCellSize)
             column = Math.floor(x / gridWidth);
 
         // Work out the position of the point relative to the box it is in
-        var relY = y - (row * gridHeight) - (degreesCellSize / 2);//decrease half cellsize because our grid is not starting from 0,0 which is having half hexagon
+        var relY = y - (row * gridHeight) //- (degreesCellSize / 2);//decrease half cellsize because our grid is not starting from 0,0 which is having half hexagon
         var relX;
 
         if (rowIsOdd) {
@@ -179,5 +181,29 @@ function calculateHexGrids(features, cellsize, isAddIds){
     return hexFeatures;
 }
 
+/** 
+//var point = [13.4015825,52.473507];
+var point = [
+    //13.4015825,52.473507
+    //0.4015825,0.473507
+    //13.401877284049988,
+    //      52.473625332625154
+    //13.401110172271729,
+    //      52.47341620511857
+    //13.401729762554169,
+    //      52.47346521946711
+    0.003519058227539062,
+          0.0005149841308648958
+];
+let feature = {'geometry':{'coordinates':point,'type':'Point'},'properties':{},'type':'Feature'};
+//console.log(feature);
+var result = getHexBin(feature,100);
+//console.log(JSON.stringify(result));
+var features = [];
+features.push(feature);
+features.push(result);
+var featureCollection = {'type':'FeatureCollection','features':features};
+console.log(JSON.stringify(featureCollection, null, 2));
+*/
 module.exports.getHexBin = getHexBin;
 module.exports.calculateHexGrids = calculateHexGrids;
