@@ -99,7 +99,11 @@ function getMoldulusHexagon(x, y, degreesCellSize)
 
     var lat = (column * gridWidth + ((row % 2) * halfWidth)) + halfWidth;
     var lon = (row * (c + degreesCellSize)) +  c + (degreesCellSize);
-    return [lon,lat];
+    return [round(lon,6),round(lat,6)];
+}
+
+function round(value, decimals) {
+    return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 }
 
 /**
@@ -117,8 +121,8 @@ function getMoldulusHexagon(x, y, degreesCellSize)
 function hexagon(center, rx, ry, properties, cosines, sines) {
     const vertices = [];
     for (let i = 0; i < 6; i++) {
-        const x = center[0] + rx * cosines[i];
-        const y = center[1] + ry * sines[i];
+        const x = round(center[0] + rx * cosines[i],6);
+        const y = round(center[1] + ry * sines[i],6);
         vertices.push([x, y]);
     }
     //first and last vertex must be the same
@@ -199,13 +203,13 @@ function calculateHexGrids(features, cellsize, isAddIds, groupByProperty){
         //feature.properties.minCount = minCount;
         feature.properties.maxCount = maxCount;
         feature.properties.occupancy = feature.properties.count/maxCount;
-        feature.properties.color = "hsla(" + (200 - (feature.properties.occupancy*100*2))  + ", 100%, 50%,0.51)";
+        feature.properties.color = "hsla(" + (200 - Math.round(feature.properties.occupancy*100*2))  + ", 100%, 50%,0.51)";
         hexFeatures.push(feature);
         if(groupByProperty){
             for (const key of Object.keys(feature.properties.subcount)) {
                 feature.properties.subcount[key].maxCount = groupPropertyCount[key].maxCount;
                 feature.properties.subcount[key].occupancy = feature.properties.subcount[key].count/groupPropertyCount[key].maxCount;
-                feature.properties.subcount[key].color = "hsla(" + (200 - (feature.properties.subcount[key].occupancy*100*2))  + ", 100%, 50%,0.51)";
+                feature.properties.subcount[key].color = "hsla(" + (200 - Math.round(feature.properties.subcount[key].occupancy*100*2))  + ", 100%, 50%,0.51)";
                 //console.log(key, JSON.stringify(feature.properties.subcount[key]));
             }
         }
