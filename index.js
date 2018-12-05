@@ -10,9 +10,14 @@ for (let i = 0; i < 6; i++) {
 }
 const hexagonAngle = 0.523598776; //30 degrees in radians
 
-function getHexBin(feature, cellSize){
+function getHexBin(feature, cellSize, isMeters){
     var point = feature.geometry.coordinates;
-    var degreesCellSize = (cellSize/1000)/111;
+    let degreesCellSize;
+    if(isMeters){
+        degreesCellSize = (cellSize/1000)/(111.111 * Math.cos(point[1] * Math.PI / 180));
+    } else {
+        degreesCellSize = cellSize;
+    }
     finalHexRootPoint = getSelectedHexagon(point[1],point[0],degreesCellSize);
     data= hexagon(finalHexRootPoint,degreesCellSize,degreesCellSize,null,cosines,sines);
     return data;
@@ -132,14 +137,17 @@ function hexagon(center, rx, ry, properties, cosines, sines) {
     return feature;
 }
 
-function calculateHexGrids(features, cellsize, isAddIds, groupByProperty){
+function calculateHexGrids(features, cellSize, isAddIds, groupByProperty, cellSizeLatitude){
     var gridMap=[];
     let maxCount = 0;
     //let minCount = Number.MAX_SAFE_INTEGER;
     let groupPropertyCount = {};
+    const degreesCellSize = (cellSize/1000)/(111.111 * Math.cos(cellSizeLatitude * Math.PI / 180));
     features.forEach(function (feature, i){
       if (feature.geometry.type.toLowerCase() === 'point') {
-        var x = getHexBin(feature, cellsize);
+        if(!(feature.properties != null && feature.properties['@ns:com:here:xyz'] != null 
+            && feature.properties['@ns:com:here:xyz'].tags != null && feature.properties['@ns:com:here:xyz'].tags.includes('centroid'))){
+        var x = getHexBin(feature, degreesCellSize, false);
         if (x) {
           var gridId = md5(JSON.stringify(x.geometry));
           x.id = gridId;
@@ -194,6 +202,7 @@ function calculateHexGrids(features, cellsize, isAddIds, groupByProperty){
         } else {
           console.error("something went wrong and hexgrid is not available for feature - " + feature);
           throw new Error("something went wrong and hexgrid is not available for feature - " + feature);
+        }
         }
       }
   });
