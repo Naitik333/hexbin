@@ -137,8 +137,13 @@ function hexagon(center, rx, ry, properties, cosines, sines) {
     return feature;
 }
 
-function calculateHexGrids(features, cellSize, isAddIds, groupByProperty, cellSizeLatitude){
+function calculateHexGrids(features, cellSize, isAddIds, groupByProperty, cellSizeLatitude, existingHexFeatures){
     var gridMap=[];
+    if(existingHexFeatures && Array.isArray(existingHexFeatures)){
+        existingHexFeatures.forEach(function (hexFeature){
+            gridMap[hexFeature.id] = hexFeature;
+        });
+    }
     let maxCount = 0;
     //let minCount = Number.MAX_SAFE_INTEGER;
     let groupPropertyCount = {};

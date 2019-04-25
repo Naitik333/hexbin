@@ -1,6 +1,6 @@
 {
   "name": "hexbin",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Helper library to find hexagon grid in which particular point lies",
   "main": "index.js",
   "scripts": {
